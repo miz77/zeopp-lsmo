@@ -41,12 +41,12 @@ metal site detection, and simluations, e.g. generation of blocking spheres.
 
 ## Installation
 
-The easiest way to install zeo++ is through the [conda](https://docs.conda.io/en/latest/) package manager:
+Install this fork in a [Pixi](https://pixi.sh/) workspace:
 
+```bash
+pixi workspace channel add --prepend https://prefix.dev/miz7/lab
+pixi add zeopp-lsmo-openmp
 ```
-conda install -c conda-forge zeopp-lsmo
-```
-
 
 ## Compilation - Linux / Mac OS / Windows with Cygwin
 
