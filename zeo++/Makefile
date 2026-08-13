@@ -5,7 +5,7 @@
 #CXX = g++
 
 #Flags to compile with
-CFLAGS += -g #-fPIC
+CFLAGS += -O3 -fopenmp #-fPIC
 CFLAGS_DYLIB += -fPIC
 
 UNAME_S := $(shell uname -s)

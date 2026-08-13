@@ -516,13 +516,14 @@ void extendVorNet(VORONOI_NETWORK *vornet, VORONOI_NETWORK *newNet,
 
 void calculateFreeSphereParameters(VORONOI_NETWORK *vornet, char *filename,
                                    bool extendedPrintout) {
-  vector<double> freeRadResults;
-  vector<double> incRadResults;
-  vector<bool> NtoN;
+  vector<double> freeRadResults(3);
+  vector<double> incRadResults(3);
+  vector<char> NtoN(3);
 
   DELTA_POS directions[3] = {DELTA_POS(1, 0, 0), DELTA_POS(0, 1, 0),
                              DELTA_POS(0, 0, 1)};
-  for (unsigned int i = 0; i < 3; i++) {
+#pragma omp parallel for schedule(static)
+  for (int i = 0; i < 3; i++) {
     VORONOI_NETWORK newNet;
     set<int> sourceNodes;
     map<int, int> idAliases;
@@ -536,9 +537,9 @@ void calculateFreeSphereParameters(VORONOI_NETWORK *vornet, char *filename,
     pair<bool, PATH> results =
         analyzeNet.findMaxFreeSphere(&idAliases, &sourceNodes);
 
-    freeRadResults.push_back(2 * results.second.max_radius);
-    incRadResults.push_back(2 * results.second.max_inc_radius);
-    NtoN.push_back(results.first);
+    freeRadResults[i] = 2 * results.second.max_radius;
+    incRadResults[i] = 2 * results.second.max_inc_radius;
+    NtoN[i] = results.first;
   }
 
   fstream output;
