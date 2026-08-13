@@ -445,6 +445,8 @@ void extendVorNet(VORONOI_NETWORK *vornet, VORONOI_NETWORK *newNet,
   newNet->nodes.clear();
   newNet->edges.clear();
   int factor = 10;
+  newNet->nodes.reserve((factor + 1) * vornet->nodes.size());
+  newNet->edges.reserve((factor + 1) * vornet->edges.size());
   newNet->v_a = vornet->v_a.scale(direction.x * factor);
   newNet->v_b = vornet->v_b.scale(direction.y * factor);
   newNet->v_c = vornet->v_c.scale(direction.z * factor);

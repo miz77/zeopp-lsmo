@@ -131,6 +131,7 @@ void DIJKSTRA_NETWORK::buildDijkstraNetwork(const VORONOI_NETWORK *vornet,
   vector<VOR_NODE>::const_iterator niter = vornet->nodes.begin();
   int i = 0;
   dnet->nodes.clear();
+  dnet->nodes.reserve(vornet->nodes.size());
 
   // Add copies of all nodes to the network
   while (niter != vornet->nodes.end()) {
