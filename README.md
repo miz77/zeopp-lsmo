@@ -11,6 +11,16 @@ For a list of changes, see the [CHANGELOG.md](./CHANGELOG.md).
 
 Email: mharanczyk@lbl.gov (Zeo++) and chr@alum.mit.edu (Voro++)
 
+## About this fork
+
+This fork is based on
+[`lsmo-epfl/zeopp-lsmo`](https://github.com/lsmo-epfl/zeopp-lsmo) commit
+`e4bb4db`. It parallelizes the three a/b/c analyses used by legacy `-res` and
+`-resex` with OpenMP and reduces allocation overhead. Results are intended to
+remain unchanged; validation is ongoing.
+
+Use `OMP_NUM_THREADS=1..3`. Parallel execution may use more memory.
+
 ## About
 
 Zeo++ is a software package for high-throughput analysis of structure

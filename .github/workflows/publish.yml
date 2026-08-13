@@ -1,0 +1,51 @@
+name: Publish
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  package:
+    name: ${{ matrix.platform }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 20
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux-64
+            runner: ubuntu-24.04
+          - platform: osx-arm64
+            runner: macos-15
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ github.event.release.tag_name }}
+
+      - name: Verify release version
+        shell: bash
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          recipe_version="$(awk -F'"' '/^  version:/ { print $2; exit }' conda.recipe/recipe.yaml)"
+          test "$RELEASE_TAG" = "v$recipe_version"
+
+      - uses: prefix-dev/rattler-build-action@v0.2.39
+        with:
+          artifact-name: zeopp-lsmo-openmp-${{ matrix.platform }}
+
+      - name: Publish to prefix.dev
+        shell: bash
+        run: |
+          package_count=0
+          while IFS= read -r package; do
+            rattler-build upload prefix --channel miz7/lab "$package"
+            package_count=$((package_count + 1))
+          done < <(find output -type f -name '*.conda')
+          test "$package_count" -gt 0
