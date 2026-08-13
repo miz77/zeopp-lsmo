@@ -1,0 +1,63 @@
+context:
+  name: zeopp-lsmo-openmp
+  version: "0.4.7.post1"
+
+package:
+  name: ${{ name }}
+  version: ${{ version }}
+
+source:
+  path: ..
+
+build:
+  number: 0
+  skip:
+    - win
+  script:
+    - make -C voro++/src libvoro++.a CXX="${CXX}" CFLAGS="${CXXFLAGS} -O3"
+    - make -C zeo++ network CXX="${CXX}" CFLAGS="${CXXFLAGS} -I${PREFIX}/include/eigen3 -O3 -fopenmp" LIB="${LDFLAGS} -lvoro++"
+    - install -d "${PREFIX}/bin"
+    - install -m 0755 zeo++/network "${PREFIX}/bin/network"
+
+requirements:
+  build:
+    - ${{ compiler('cxx') }}
+    - make
+  host:
+    - eigen
+    - if: linux
+      then: libgomp
+      else: llvm-openmp
+
+tests:
+  - package_contents:
+      bin:
+        - network
+  - script:
+      - if: linux
+        then: >-
+          cd tests && OMP_NUM_THREADS=2 ZEOPP_BINARY="$(command -v network)"
+          pytest -q test_zeopp.py
+      - if: osx
+        then: >-
+          (cd tests && OMP_NUM_THREADS=1 ZEOPP_BINARY="$(command -v network)"
+          pytest -q test_zeopp.py::test_xyz
+          test_zeopp.py::test_allow_adjust_coords_and_cell
+          test_zeopp.py::test_chan)
+      - if: osx
+        then: >-
+          (cd tests && OMP_NUM_THREADS=3 ZEOPP_BINARY="$(command -v network)"
+          pytest -q test_zeopp.py::test_allow_adjust_coords_and_cell)
+    requirements:
+      run:
+        - pytest
+    files:
+      source:
+        - tests/
+
+about:
+  license: LicenseRef-BSD-3-CLAUSE-ZEOPP
+  license_file:
+    - LICENSE
+    - voro++/LICENSE
+  summary: Zeo++ LSMO with OpenMP-parallel legacy -res analyses

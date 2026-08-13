@@ -1,19 +1,24 @@
-name: ci
+name: CI
 
 on: [push, pull_request]
 
 jobs:
-  ubuntu:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
+  package:
+    name: ${{ matrix.platform }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 20
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux-64
+            runner: ubuntu-24.04
+          - platform: osx-arm64
+            runner: macos-15
 
     steps:
-      - uses: actions/checkout@v2
-
-      - name: build zeo++
-        run: sudo apt install libeigen3-dev && bash .github/build.sh
-      - name: test zeo++
-        run: |
-          cd tests
-          pip install pytest
-          pytest test_zeopp.py
+      - uses: actions/checkout@v7.0.1
+      - uses: prefix-dev/rattler-build-action@v0.2.39
+        with:
+          artifact-name: zeopp-lsmo-openmp-${{ matrix.platform }}
