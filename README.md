@@ -1,15 +1,14 @@
-[![Build Status](https://github.com/lsmo-epfl/zeopp-lsmo/workflows/ci/badge.svg)](https://github.com/lsmo-epfl/zeopp-lsmo/actions)
-[![conda-forge](https://img.shields.io/conda/vn/conda-forge/zeopp-lsmo.svg?style=flat)](https://anaconda.org/conda-forge/zeopp-lsmo)
+[![CI](https://github.com/miz77/zeopp-lsmo/actions/workflows/ci.yml/badge.svg)](https://github.com/miz77/zeopp-lsmo/actions/workflows/ci.yml)
+[![prefix.dev package](https://img.shields.io/badge/prefix.dev-v0.4.7.post1-ea7233?style=flat)](https://prefix.dev/channels/@miz7/lab/packages/zeopp-lsmo-openmp)
 
 # Zeo++-LSMO
 
 High-throughput analysis of crystalline porous materials
 By Maciej Haranczyk, Chris H Rycroft, Richard L Martin, Thomas F Willems
 
-This repository contains a fork of the original zeo++ code (version 0.3.0) with bug fixes and improvements, maintained by the [Laboratory of Molecular Simulation](http://lsmo.epfl.ch/) at EPFL.
-For a list of changes, see the [CHANGELOG.md](./CHANGELOG.md).
+Zeo++-LSMO is a fork of the original zeo++ code (version 0.3.0) with bug fixes and improvements, maintained by the [Laboratory of Molecular Simulation](http://lsmo.epfl.ch/) at EPFL.
+For the upstream change history, see the [CHANGELOG.md](./CHANGELOG.md).
 
-Email: mharanczyk@lbl.gov (Zeo++) and chr@alum.mit.edu (Voro++)
 
 ## About this fork
 
@@ -41,56 +40,59 @@ metal site detection, and simluations, e.g. generation of blocking spheres.
 
 ## Installation
 
-Install this fork in a [Pixi](https://pixi.sh/) workspace:
+The easiest way to install this fork is through the [Pixi](https://pixi.sh/) package manager:
 
 ```bash
 pixi workspace channel add --prepend https://prefix.dev/miz7/lab
 pixi add zeopp-lsmo-openmp
 ```
 
-## Compilation - Linux / Mac OS / Windows with Cygwin
+Alternatively, install it with [conda](https://docs.conda.io/en/latest/):
 
-The code is written in ANSI C++, and compiles on many system architectures. The
-package contains the C++ source code of Zeo++ as well as Voro++ library.
-On Linux, Mac OS, and Windows (using Cygwin), the compilation and installed
-can be carried out using GNU Make.
+```bash
+conda config --add channels https://prefix.dev/miz7/lab
+conda install zeopp-lsmo-openmp
+```
+
+## Compilation - Linux
+
+The code is written in ANSI C++. The package contains the C++ source code of
+Zeo++ as well as the Voro++ library. Building requires GNU Make, Eigen 3, and a
+C++ compiler with OpenMP support.
+
+The standalone instructions below are currently verified only on Linux x86-64.
+Builds on macOS and Windows are not currently verified and may require
+additional compiler and linker configuration.
 
 #### Step by step compilation
 
 Clone the git repository
 ```
-git clone https://github.com/lsmo-epfl/zeopp-lsmo
+git clone https://github.com/miz77/zeopp-lsmo.git
 cd zeopp-lsmo
 ```
 
-Download Eigen library v3.2.7 (if not already installed)
-```
-wget https://gitlab.com/libeigen/eigen/-/archive/3.2.7/eigen-3.2.7.tar.bz2
-tar xf eigen-3.2.7.tar.bz2
-```
+Install Eigen 3 (if not already installed). The compiler must be able to find
+the `eigen3/Eigen/Dense` header.
 
-Compile Voro++ library (you may need first to review config.mk file in voro++/ directory; please check Voro++ documentation or
-read voro++/README):
-```
-cd voro++
-make
-```
-
-Compile Zeo++ code:
+Compile the Voro++ library:
 
 ```
-cd ../zeo++
-make
+make -C voro++/src libvoro++.a
 ```
 
-This will create `network` binary, the main Zeo++ binary.
+Compile the Zeo++ code:
+
+```
+make -C zeo++ network
+```
+
+This will create the `zeo++/network` executable, the main Zeo++ binary.
 Please view the Zeo++ website for instructions, review documentation/README or contact the authors to inquire about otherwise undocumented or custom features.
 
 ## Related programs
 
-No external dependencies are required to compile and run the code
-(except for the Voro++ library provided with the code), but several
-programs may be useful for analyzing the output:
+Several optional programs may be useful for analyzing the output:
 
 - VMD - molecular visualization package can be used to visualize some of
   characteristics calculated by Zeo++, for example, Voronoi networks,
